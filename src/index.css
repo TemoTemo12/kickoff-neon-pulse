@@ -2,41 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Soccer Website Design System - Dark theme with neon accents */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark theme soccer design system */
+    --background: 220 20% 6%;
+    --foreground: 120 100% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 220 20% 8%;
+    --card-foreground: 120 100% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 20% 10%;
+    --popover-foreground: 120 100% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Neon green primary */
+    --primary: 120 100% 50%;
+    --primary-foreground: 220 20% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Electric blue secondary */
+    --secondary: 200 100% 50%;
+    --secondary-foreground: 220 20% 6%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 20% 12%;
+    --muted-foreground: 120 20% 70%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Neon orange accent */
+    --accent: 30 100% 55%;
+    --accent-foreground: 220 20% 6%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 20% 15%;
+    --input: 220 20% 12%;
+    --ring: 120 100% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Soccer-specific design tokens */
+    --neon-glow: 120 100% 50%;
+    --stadium-dark: 220 25% 4%;
+    --field-green: 120 60% 35%;
+    --scoreboard: 200 100% 45%;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(220 25% 4%) 0%, hsl(220 20% 8%) 50%, hsl(220 25% 4%) 100%);
+    --gradient-neon: linear-gradient(135deg, hsl(120 100% 50%) 0%, hsl(200 100% 50%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(220 20% 8%) 0%, hsl(220 20% 10%) 100%);
+    
+    /* Shadows and glows */
+    --shadow-neon: 0 0 20px hsl(120 100% 50% / 0.3);
+    --shadow-card: 0 4px 20px hsl(220 25% 2% / 0.5);
+    --glow-intense: 0 0 30px hsl(120 100% 50% / 0.6);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-glow: box-shadow 0.3s ease;
 
     --sidebar-background: 0 0% 98%;
 
@@ -101,5 +123,65 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background: hsl(var(--stadium-dark));
+  }
+}
+
+@layer components {
+  /* Neon glow effects */
+  .neon-glow {
+    box-shadow: var(--shadow-neon);
+    transition: var(--transition-glow);
+  }
+  
+  .neon-glow:hover {
+    box-shadow: var(--glow-intense);
+  }
+  
+  /* Card with neon border */
+  .neon-card {
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+  
+  .neon-card:hover {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow: var(--shadow-card), var(--shadow-neon);
+  }
+  
+  /* Live indicator animation */
+  .live-pulse {
+    animation: pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse-neon {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.8);
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0 0 15px hsl(var(--primary) / 1);
+    }
+  }
+  
+  /* Gradient text */
+  .gradient-text {
+    background: var(--gradient-neon);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Hover effects */
+  .hover-glow {
+    transition: var(--transition-smooth);
+  }
+  
+  .hover-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-intense);
   }
 }

@@ -61,7 +61,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Soccer-specific colors
+				'neon-glow': 'hsl(var(--neon-glow))',
+				'stadium-dark': 'hsl(var(--stadium-dark))',
+				'field-green': 'hsl(var(--field-green))',
+				'scoreboard': 'hsl(var(--scoreboard))'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
