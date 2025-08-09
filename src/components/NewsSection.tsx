@@ -1,10 +1,15 @@
-import { Calendar, User, ArrowRight, Play } from "lucide-react";
+import { useState } from "react";
+import { Calendar, User, ArrowRight, Play, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import matchAction from "@/assets/match-action.jpg";
 
 const NewsSection = () => {
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
   const newsArticles = [
     {
       id: 1,
@@ -54,6 +59,14 @@ const NewsSection = () => {
 
   const categories = ["All", "Champions League", "Premier League", "La Liga", "Transfers", "World Cup"];
 
+  const filteredArticles = newsArticles.filter(article => {
+    const matchesCategory = selectedCategory === "All" || article.category === selectedCategory;
+    const matchesSearch = searchTerm === "" || 
+      article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   return (
     <section id="news" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -66,17 +79,30 @@ const NewsSection = () => {
           </p>
         </div>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={category === "All" ? "default" : "outline"}
-              className={category === "All" ? "neon-glow" : "border-primary/30 hover:border-primary"}
-            >
-              {category}
-            </Button>
-          ))}
+        {/* Search and Category Filter */}
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-center mb-10">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search news and articles..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-64 bg-card border-primary/30 focus:border-primary"
+            />
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-3">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={category === selectedCategory ? "default" : "outline"}
+                onClick={() => setSelectedCategory(category)}
+                className={category === selectedCategory ? "neon-glow" : "border-primary/30 hover:border-primary"}
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
         </div>
 
         {/* Featured Article */}
@@ -133,7 +159,7 @@ const NewsSection = () => {
 
         {/* News Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {newsArticles.slice(1).map((article) => (
+          {filteredArticles.slice(1).map((article) => (
             <Card key={article.id} className="neon-card overflow-hidden hover-glow">
               <div className="relative">
                 <img 
@@ -183,6 +209,14 @@ const NewsSection = () => {
             </Card>
           ))}
         </div>
+        
+        {filteredArticles.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">
+              No articles found matching your search criteria.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

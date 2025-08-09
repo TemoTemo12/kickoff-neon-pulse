@@ -1,15 +1,18 @@
-import { Trophy, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { useState } from "react";
+import { Trophy, TrendingUp, TrendingDown, Minus, ArrowUpDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const LeagueStandings = () => {
+  const [activeLeague, setActiveLeague] = useState("premier-league");
+  const [sortBy, setSortBy] = useState("position");
   const leagues = [
-    { name: "Premier League", country: "England", active: true },
-    { name: "La Liga", country: "Spain", active: false },
-    { name: "Bundesliga", country: "Germany", active: false },
-    { name: "Serie A", country: "Italy", active: false },
+    { name: "Premier League", country: "England", id: "premier-league", active: true },
+    { name: "La Liga", country: "Spain", id: "la-liga", active: false },
+    { name: "Bundesliga", country: "Germany", id: "bundesliga", active: false },
+    { name: "Serie A", country: "Italy", id: "serie-a", active: false },
   ];
 
   const standings = [
@@ -102,11 +105,27 @@ const LeagueStandings = () => {
     }
   };
 
+  const sortedStandings = [...standings].sort((a, b) => {
+    switch (sortBy) {
+      case "points": return b.points - a.points;
+      case "goalDifference": return b.goalDifference - a.goalDifference;
+      case "goalsFor": return b.goalsFor - a.goalsFor;
+      default: return a.position - b.position;
+    }
+  });
   const getPositionColor = (position: number) => {
     if (position <= 4) return "text-primary"; // Champions League
     if (position <= 6) return "text-secondary"; // Europa League
     if (position >= 18) return "text-destructive"; // Relegation
     return "text-foreground";
+  };
+
+  const handleLeagueChange = (leagueId: string) => {
+    setActiveLeague(leagueId);
+  };
+
+  const handleSort = (field: string) => {
+    setSortBy(field);
   };
 
   return (
@@ -125,9 +144,10 @@ const LeagueStandings = () => {
         <div className="flex flex-wrap justify-center gap-3 mb-10">
           {leagues.map((league) => (
             <Button
-              key={league.name}
-              variant={league.active ? "default" : "outline"}
-              className={league.active ? "neon-glow" : "border-primary/30 hover:border-primary"}
+              key={league.id}
+              variant={activeLeague === league.id ? "default" : "outline"}
+              onClick={() => handleLeagueChange(league.id)}
+              className={activeLeague === league.id ? "neon-glow" : "border-primary/30 hover:border-primary"}
             >
               <Trophy className="mr-2 h-4 w-4" />
               {league.name}
@@ -168,14 +188,32 @@ const LeagueStandings = () => {
                     <TableHead className="text-center">L</TableHead>
                     <TableHead className="text-center">GF</TableHead>
                     <TableHead className="text-center">GA</TableHead>
-                    <TableHead className="text-center">GD</TableHead>
-                    <TableHead className="text-center">Pts</TableHead>
+                    <TableHead className="text-center">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleSort("goalDifference")}
+                        className="text-xs hover:text-primary"
+                      >
+                        GD <ArrowUpDown className="h-3 w-3 ml-1" />
+                      </Button>
+                    </TableHead>
+                    <TableHead className="text-center">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => handleSort("points")}
+                        className="text-xs hover:text-primary"
+                      >
+                        Pts <ArrowUpDown className="h-3 w-3 ml-1" />
+                      </Button>
+                    </TableHead>
                     <TableHead className="text-center">Form</TableHead>
                     <TableHead className="w-12"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {standings.map((team) => (
+                  {sortedStandings.map((team) => (
                     <TableRow key={team.position} className="border-border hover:bg-muted/30">
                       <TableCell>
                         <div className="flex items-center space-x-2">

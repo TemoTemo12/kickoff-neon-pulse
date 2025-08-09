@@ -1,8 +1,11 @@
-import { Clock, Users, Trophy } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Clock, Users, Trophy, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroStadium from "@/assets/hero-stadium.jpg";
 
 const HeroSection = () => {
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+  const [autoplay, setAutoplay] = useState(true);
   const featuredMatches = [
     {
       id: 1,
@@ -26,8 +29,26 @@ const HeroSection = () => {
     }
   ];
 
+  useEffect(() => {
+    if (!autoplay) return;
+    
+    const interval = setInterval(() => {
+      setCurrentMatchIndex((prev) => (prev + 1) % featuredMatches.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [autoplay, featuredMatches.length]);
+
+  const scrollToLive = () => {
+    document.getElementById("live")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToLeagues = () => {
+    document.getElementById("leagues")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -50,20 +71,51 @@ const HeroSection = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <Button size="lg" className="neon-glow hover-glow">
+          <Button size="lg" className="neon-glow hover-glow" onClick={scrollToLive}>
             <Clock className="mr-2 h-5 w-5" />
             Watch Live Matches
           </Button>
-          <Button variant="outline" size="lg" className="border-primary/50 hover:border-primary">
+          <Button variant="outline" size="lg" className="border-primary/50 hover:border-primary" onClick={scrollToLeagues}>
             <Trophy className="mr-2 h-5 w-5" />
             View Leagues
           </Button>
         </div>
 
-        {/* Featured Matches */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {featuredMatches.map((match) => (
-            <div key={match.id} className="neon-card rounded-lg p-6 hover-glow">
+        {/* Featured Matches Carousel */}
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold">Featured Matches</h3>
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setAutoplay(!autoplay)}
+                className="text-primary hover:text-primary/80"
+              >
+                {autoplay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              </Button>
+              <div className="flex space-x-2">
+                {featuredMatches.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentMatchIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === currentMatchIndex ? 'bg-primary w-6' : 'bg-primary/30'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {featuredMatches.map((match, index) => (
+              <div 
+                key={match.id} 
+                className={`neon-card rounded-lg p-6 hover-glow transition-all duration-500 ${
+                  index === currentMatchIndex ? 'ring-2 ring-primary/50 scale-105' : 'opacity-70'
+                }`}
+              >
               <div className="flex items-center justify-between mb-4">
                 <span className="text-sm text-muted-foreground">{match.league}</span>
                 <div className="flex items-center space-x-2">
@@ -98,7 +150,8 @@ const HeroSection = () => {
                 </Button>
               </div>
             </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
